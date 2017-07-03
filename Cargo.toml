@@ -1,0 +1,6 @@
+[package]
+name = "aud"
+version = "0.1.0"
+authors = ["Heinz N. Gies <heinz@licenser.net>"]
+
+[dependencies]
