@@ -107,7 +107,14 @@ impl<T> Adventure<T> {
 /// A simple failure that can return an error along with the new state.
 pub struct Failure<T> {
     error: Box<Error>,
-    acc: T,
+    state: T,
+}
+
+impl<T> Failure<T> {
+    /// Creates a new failure from a state and an error
+    pub fn new(state: T, error: Box<Error>) -> Self {
+        Failure { state, error }
+    }
 }
 
 fn tell_<T>(saga: &Vec<Adventure<T>>, i: usize, acc: T) -> Result<T, Failure<T>> {
@@ -116,7 +123,7 @@ fn tell_<T>(saga: &Vec<Adventure<T>>, i: usize, acc: T) -> Result<T, Failure<T>>
     } else {
         match saga[i].forward(acc) {
             Ok(acc1) => tell_(saga, i + 1, acc1),
-            Err(Failure { acc: acc1, error }) => Err(revert(saga, error, i, acc1)),
+            Err(Failure { state: acc1, error }) => Err(revert(saga, error, i, acc1)),
         }
     }
 }
@@ -124,7 +131,7 @@ fn tell_<T>(saga: &Vec<Adventure<T>>, i: usize, acc: T) -> Result<T, Failure<T>>
 fn revert<T>(saga: &Vec<Adventure<T>>, error: Box<Error>, i: usize, acc: T) -> Failure<T> {
     let acc1 = saga[i].backward(acc);
     if i == 0 {
-        Failure { error, acc: acc1 }
+        Failure { error, state: acc1 }
     } else {
         revert(saga, error, i - 1, acc1)
     }
@@ -155,10 +162,7 @@ mod tests {
     }
     fn inc2(i: i32) -> Result<i32, Failure<i32>> {
         if i >= 2 {
-            Err(Failure {
-                error: Box::new(StupidError { stupid: true }),
-                acc: i + 1,
-            })
+            Err(Failure::new(i + 1, Box::new(StupidError { stupid: true })))
         } else {
             Ok(i + 1)
         }
@@ -183,7 +187,7 @@ mod tests {
         ]);
         match saga.tell(0) {
             Ok(_) => unimplemented!(),
-            Err(Failure { acc: res, .. }) => assert_eq!(res, 0),
+            Err(Failure { state: res, .. }) => assert_eq!(res, 0),
         }
 
     }
