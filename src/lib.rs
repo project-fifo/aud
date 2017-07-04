@@ -115,9 +115,9 @@ impl<T> Failure<T> {
     pub fn new(state: T, error: Box<Error>) -> Self {
         Failure { state, error }
     }
-    /// Truns the Failure into an result / Err
-    pub fn to_error(self) -> Result<T, Box<Error>> {
-        Err(self.error)
+    /// Truns the Failure into an Err
+    pub fn to_error(self) -> Box<Error> {
+        self.error
     }
 }
 
