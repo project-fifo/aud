@@ -1,6 +1,6 @@
 [package]
 name = "aud"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Heinz N. Gies <heinz@project-fifo.net>"]
 description = "A minimal implementation of Sagas"
 repository = "https://github.com/project-fifo/aud"
